@@ -11,7 +11,8 @@ public enum Orientation
     UP = 0,
     DOWN = 1,
     LEFT = 2,
-    RIGHT = 3
+    RIGHT = 3,
+    NONE = 4
 }
 
 public class Instruction
@@ -44,15 +45,26 @@ public class Packet
         Ant = 1,
         Box = 2
     }
-    public string uid;
     public Type type;
     public object container;
+    public List<Packet> packets = new List<Packet>(); // child packets
 
-    public Packet(string UID, Type mType, GridContainer mContainer)
+    public Packet(Type mType, object mContainer)
     {
-        uid = UID;
         type = mType;
         container = mContainer;
+        if (container is GridContainer)
+        {
+            ((GridContainer)container).Contain(this);
+        }
+    }
+
+    ~Packet()
+    {
+        if (container is GridContainer)
+        {
+            ((GridContainer)container).Release(this);
+        }
     }
 
     public Vector2 Location
@@ -66,7 +78,7 @@ public class Packet
             {
                 return ((Packet)container).Location;
             }
-            return new Vector2(0,0); // should not happen
+            return new Vector2(-1,-1); // should not happen
         }
     }
 
@@ -81,9 +93,10 @@ public class Packet
             if (result == Instruction.Result.SUCCEED)
             {
                 /* TODO: check barriers */
-
                 from.Release(this);
                 target.Contain(this);
+            } else
+            {
             }
         }
         return result;

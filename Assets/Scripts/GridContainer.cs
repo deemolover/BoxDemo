@@ -37,6 +37,7 @@ public class GridContainer : MonoBehaviour
     {
         manager = mManager;
         location = mLocation;
+        initialized = true;
     }
 
     public void Release(Packet packet)
@@ -45,13 +46,13 @@ public class GridContainer : MonoBehaviour
         {
             packets.Remove(packet);
         }
-        if (packet.container == this)
+        if (packet.container != null && packet.container.Equals(this))
             packet.container = null;
     }
 
     public void Contain(Packet packet)
     {
-        if (packet.container != this)
+        if (packet.container == null || !packet.container.Equals(this))
             packet.container = this;
         if (!packets.Contains(packet))
             packets.Add(packet);
@@ -59,6 +60,7 @@ public class GridContainer : MonoBehaviour
 
     public Instruction.Result QueryAdjacentContainer(Orientation oriVal, ref GridContainer container)
     {
+        if (!initialized) return Instruction.Result.ERROR;
         Instruction.Result result = Instruction.Result.ERROR;
         Vector2 target;
         switch (oriVal)
