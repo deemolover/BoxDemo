@@ -6,6 +6,24 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+public class ResourceLoader
+{
+    public static Dictionary<string, Sprite> sprites;
+    public static Sprite LoadImage(string filepath)
+    {
+        if (sprites == null)
+            sprites = new Dictionary<string, Sprite>();
+        if (!sprites.ContainsKey(filepath))
+        {
+            var pref = Resources.Load(filepath, typeof(Sprite));
+            if (pref == null) return null;
+            Sprite tmp = GameObject.Instantiate(pref) as Sprite;
+            sprites.Add(filepath, tmp);
+        }
+        return sprites[filepath];
+    }
+}
+
 public enum Orientation
 {
     UP = 0,
@@ -43,11 +61,15 @@ public class Packet
     {
         Unk = 0,
         Ant = 1,
-        Box = 2
+        Box = 2,
+        Target = 16,
+        Wall = 32,
+        Hole = 64
     }
     public Type type;
     public object container;
     public List<Packet> packets = new List<Packet>(); // child packets
+
 
     public Packet(Type mType, object mContainer)
     {
@@ -61,7 +83,7 @@ public class Packet
 
     ~Packet()
     {
-        if (container is GridContainer)
+        if (container != null && container is GridContainer)
         {
             ((GridContainer)container).Release(this);
         }

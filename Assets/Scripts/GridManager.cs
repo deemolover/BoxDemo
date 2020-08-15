@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    public GameObject gridPrefab;
+    public GameObject packetPrefab;
+
     PacketRenderer selectedPacketRenderer;
 
     Dictionary<int, GridContainer> containers = new Dictionary<int, GridContainer>();
@@ -18,7 +22,7 @@ public class GridManager : MonoBehaviour
 
     public static int HashLocation(Vector2 vec)
     {
-        return (int)(vec.x) * 1000 + (int)(vec.y);
+        return (int)(vec.x+100) * 1000 + (int)(vec.y+100);
     }
 
     // Start is called before the first frame update
@@ -42,6 +46,75 @@ public class GridManager : MonoBehaviour
             if (renderer.name == "Character")
                 selectedPacketRenderer = renderer;
         }
+    }
+
+    void ClearScene()
+    {
+        foreach (var child in GetComponentsInChildren<Transform>())
+        {
+            Destroy(child);
+        }
+
+        selectedPacketRenderer = null;
+        containers = new Dictionary<int, GridContainer>();
+
+    }
+
+    void LoadLevel(string levelName)
+    {
+        ClearScene();
+
+        string filepath = Application.streamingAssetsPath + "/" + levelName + ".csv";
+        var data = CSVTool.Read(filepath, Encoding.UTF8);
+
+        int width = 0;
+        foreach (var line in data)
+        {
+            width = Mathf.Max(width, line.Count);
+        }
+        int height = data.Count;
+
+        List<GridContainer> containerData;
+        for (int i = 0; i < data.Count; ++i)
+        {
+            for (int j = 0; j < data[i].Count; ++j)
+            {
+                string element = data[i][j];
+                if (element == "")
+                {
+                    continue;
+                }
+                GameObject obj = Instantiate(gridPrefab);
+                obj.transform.parent = transform;
+                GridContainer container = obj.AddComponent<GridContainer>();
+                Vector2 location = new Vector2(j - width / 2, height / 2 - i);
+                container.Init(this, location);
+                containers.Add(HashLocation(container.Location), container);
+
+                Packet packet = null;
+                switch (element)
+                {
+                    case "pack":
+                        packet = new Packet(Packet.Type.Box, container);
+                        break;
+                    case "ant-u":
+                        packet = new Packet(Packet.Type.Ant, container);
+                        break;
+                    default:
+                        break;
+                        
+                }
+
+                if (packet != null)
+                {
+                    GameObject pack = Instantiate(packetPrefab);
+                    pack.transform.parent = transform;
+                    var renderer = pack.AddComponent<PacketRenderer>();
+                    renderer.Init(this, packet);
+                }
+            }
+        }
+
     }
 
     public Instruction.Result QueryContainer(Vector2 location, ref GridContainer container)
