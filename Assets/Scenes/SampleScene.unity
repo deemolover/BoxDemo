@@ -206,7 +206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InitLocation: {x: 0, y: 0}
   manager: {fileID: 0}
-  type: 0
+  type: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,7 +458,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InitLocation: {x: 1, y: 0}
   manager: {fileID: 0}
-  type: 0
+  type: 2
 --- !u!1 &791816319
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,6 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 926926ff76ddf334e92ddcdf544b6f54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridPrefab: {fileID: 0}
 --- !u!1001 &1074983948
 PrefabInstance:
   m_ObjectHideFlags: 0
