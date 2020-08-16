@@ -81,6 +81,14 @@ public class Packet
     // TODO: describe with enum
     bool packable = false, unpackable = false;
     Orientation antOri = Orientation.NONE;
+    public Orientation AntOrientation
+    {
+        get
+        {
+            if (type == Type.Ant) return antOri;
+            else return Orientation.NONE;
+        }
+    }
     public bool Selectable
     {
         get { return type == Type.Ant; }

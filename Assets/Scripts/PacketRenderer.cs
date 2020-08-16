@@ -11,7 +11,7 @@ public class PacketRenderer : MonoBehaviour
     public Packet.Type type;
 
     public Packet packet;
-
+    SpriteRenderer arrowReminder;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +27,17 @@ public class PacketRenderer : MonoBehaviour
     {
         manager = mManager;
         packet = mPacket;
+
+        foreach (Transform child in transform)
+        {
+            if (child.name == "orientation")
+            {
+                arrowReminder = child.gameObject.GetComponent<SpriteRenderer>();
+            }
+        }
         UpdateType();
+        if (packet.type != Packet.Type.Ant)
+            arrowReminder.enabled = false;
         initialized = true;
     }
 
@@ -47,6 +57,7 @@ public class PacketRenderer : MonoBehaviour
     {
         currentType = packet.type;
         GetComponent<SpriteRenderer>().sortingOrder = GridManager.OrderOfPacket(currentType);
+        arrowReminder.sortingOrder = GridManager.OrderOfPacket(currentType) - 1;
         string filepath = "Sprites/{0}";
         switch (currentType)
         {
@@ -54,6 +65,16 @@ public class PacketRenderer : MonoBehaviour
                 filepath = "character";
                 if (packet.Packer) filepath = "packer";
                 if (packet.Unpacker) filepath = "unpacker";
+                int x = 0, y = 0;
+                switch (packet.AntOrientation)
+                {
+                    case Orientation.UP:    y = 1;  break;
+                    case Orientation.LEFT:  x = -1; break;
+                    case Orientation.DOWN:  y = -1; break;
+                    case Orientation.RIGHT: x = 1;  break;
+                    default:break;
+                }
+                arrowReminder.transform.up = new Vector3(x, y, 0);
                 break;
             case Packet.Type.Target:
                 filepath = "target";
@@ -63,7 +84,7 @@ public class PacketRenderer : MonoBehaviour
             case Packet.Type.Hole: filepath = "hole";       break;
             default: filepath = "box";  break;
         }
-
+        
         filepath = string.Format("Sprites/{0}", filepath);
         GetComponent<SpriteRenderer>().sprite = ResourceLoader.LoadImage(filepath);
     }
@@ -74,6 +95,18 @@ public class PacketRenderer : MonoBehaviour
             manager.UpdateSelectedPacket(this);
     }
 
+    public void Hide()
+    {
+        GetComponent<SpriteRenderer>().enabled = false;
+        arrowReminder.enabled = false;
+    }
+
+    public void Show()
+    {
+        GetComponent<SpriteRenderer>().enabled = true;
+        if (packet.type == Packet.Type.Ant)
+            arrowReminder.enabled = true;
+    }
 
     // Update is called once per frame
     void Update()
@@ -83,12 +116,14 @@ public class PacketRenderer : MonoBehaviour
             Destroy(gameObject);
         if (packet.container is Packet)
         {
-            GetComponent<SpriteRenderer>().enabled = false;
+            Hide();
         } else
         {
-            GetComponent<SpriteRenderer>().enabled = true;
+            Show();
         }
-        transform.position = GridManager.LocationToPos(packet.Location);
+        Vector3 vec = GridManager.LocationToPos(packet.Location);
+        vec.z = - GridManager.OrderOfPacket(packet.type) / 100;
+        transform.position = vec;
 
         if (currentType != packet.type)
         {
