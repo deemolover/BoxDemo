@@ -112,7 +112,10 @@ public class GridManager : MonoBehaviour
                         packet = new Packet(Packet.Type.Box, container);
                         break;
                     case "wall":
-                        packet = new Packet(Packet.Type.Box, container);
+                        packet = new Packet(Packet.Type.Wall, container);
+                        break;
+                    case "hole":
+                        packet = new Packet(Packet.Type.Hole, container);
                         break;
                     case "ant-u":
                         packet = new Packet(Packet.Type.Ant, container);

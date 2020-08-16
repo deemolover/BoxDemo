@@ -50,6 +50,9 @@ public class PacketRenderer : MonoBehaviour
             case Packet.Type.Ant:
                 filepath = string.Format(filepath, "character");
                 break;
+            case Packet.Type.Hole:
+                filepath = string.Format(filepath, "hole");
+                break;
             default:
                 filepath = string.Format(filepath, "box");
                 break;
