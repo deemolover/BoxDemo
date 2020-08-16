@@ -1,5 +1,7 @@
-wall,wall,wall,hole,wall,wall
-tar,hole,.,antP-l,ant-l,ant-l
-.,.,.,.,.,.
-ant-r,.,pack,.,.,.
-.,.,ant-u,ant-u,.,.
+.,.,.,.,hole,tar,.
+ant-r,.,.,.,.,hole,.
+.,.,hole,.,hole,.,hole
+ant-r,antP-r,.,.,.,hole,.
+ant-r,.,.,.,.,.,hole
+.,.,pack,.,.,.,.
+.,.,ant-u,ant-u,ant-u,ant-u,.

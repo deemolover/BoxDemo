@@ -41,7 +41,10 @@ public class Instruction
     public enum Result
     {
         SUCCEED = 0,
-        ERROR = 1
+        ERROR = 1,
+        INVALID_ANT_MOVE = 2,
+        INCOMPATIBLE = 3,
+        INVALID_GRID = 4,
     }
 
     public enum Type
@@ -73,6 +76,10 @@ public class Packet
     public object container;
     public List<Packet> packets = new List<Packet>(); // child packets
 
+    // ant related info, valid when this is an ant
+    bool packable = false, unpackable = false;
+    Orientation antOri = Orientation.NONE;
+
 
     public Packet(Type mType, object mContainer)
     {
@@ -89,6 +96,16 @@ public class Packet
         if (container != null && container is GridContainer)
         {
             ((GridContainer)container).Release(this);
+        }
+    }
+
+    public void AntInit(bool mPackable, bool mUnpackable, Orientation orientation)
+    {
+        if (type == Type.Ant)
+        {
+            packable = mPackable;
+            unpackable = mUnpackable;
+            antOri = orientation;
         }
     }
 
@@ -109,19 +126,20 @@ public class Packet
 
     public Instruction.Result Move(Orientation oriVal)
     {
-        GridContainer target = null;
+        if (type == Type.Ant && antOri != oriVal)
+            return Instruction.Result.INVALID_ANT_MOVE;
         Instruction.Result result = Instruction.Result.ERROR;
         if (container is GridContainer)
         {
+            GridContainer target = null;
             GridContainer from = (GridContainer)container;
             result = from.QueryAdjacentContainer(oriVal, ref target);
             if (result == Instruction.Result.SUCCEED)
             {
-                /* TODO: check barriers */
+                if (!target.Compatible(this))
+                    return Instruction.Result.INCOMPATIBLE;
                 from.Release(this);
                 target.Contain(this);
-            } else
-            {
             }
         }
         return result;
@@ -129,15 +147,17 @@ public class Packet
 
     public Instruction.Result ReceiveInstruction(Instruction instr)
     {
+        Instruction.Result result = Instruction.Result.ERROR;
         switch (instr.type)
         {
             case Instruction.Type.MOVE:
-                Move(instr.oriVal);
+                result = Move(instr.oriVal);
                 break;
             default:
                 break;
         }
-        return Instruction.Result.SUCCEED;
+        Debug.Log(result);
+        return result;
     }
 
     

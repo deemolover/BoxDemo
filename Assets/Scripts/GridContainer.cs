@@ -59,6 +59,30 @@ public class GridContainer : MonoBehaviour
             packets.Add(packet);
     }
 
+    public bool HasPacketOfType(Packet.Type givenType)
+    {
+        foreach (var packet in packets)
+        {
+            if (packet.type == givenType)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool Compatible(Packet packet)
+    {
+        if (HasPacketOfType(Packet.Type.Wall))
+            return false;
+        if (packet.type == Packet.Type.Ant)
+        {
+            if (HasPacketOfType(Packet.Type.Ant))
+                return false;
+        }
+        return true;
+    }
+
     public Instruction.Result QueryAdjacentContainer(Orientation oriVal, ref GridContainer container)
     {
         if (!initialized) return Instruction.Result.ERROR;

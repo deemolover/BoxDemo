@@ -11,8 +11,17 @@ public class GridManager : MonoBehaviour
     public GameObject packetPrefab;
 
     PacketRenderer selectedPacketRenderer;
+    // GridContainer selectedContainer;
 
     Dictionary<int, GridContainer> containers = new Dictionary<int, GridContainer>();
+
+    public static int OrderOfPacket(Packet.Type type)
+    {
+        if (type == Packet.Type.Ant) return 16;
+        if (type == Packet.Type.Target) return 2;
+        if (type == Packet.Type.Hole) return 1;
+        return 4;
+    }
 
     public static Vector2 LocationToPos(Vector2 location)
     {
@@ -105,29 +114,60 @@ public class GridManager : MonoBehaviour
                 container.Init(this, location);
                 containers.Add(HashLocation(container.Location), container);
 
+                Packet.Type packetType = Packet.Type.Unk;
                 Packet packet = null;
-                switch (element)
+                
+                if (element.StartsWith("ant"))
                 {
-                    case "pack":
-                        packet = new Packet(Packet.Type.Box, container);
-                        break;
-                    case "wall":
-                        packet = new Packet(Packet.Type.Wall, container);
-                        break;
-                    case "hole":
-                        packet = new Packet(Packet.Type.Hole, container);
-                        break;
-                    case "ant-u":
-                        packet = new Packet(Packet.Type.Ant, container);
-                        break;
-                    case "ant-r":
-                        packet = new Packet(Packet.Type.Ant, container);
-                        break;
-                    default:
-                        break;
+                    // ant related info
+                    bool packable = false, unpackable = false;
+                    Orientation antOri = Orientation.NONE;
+                    packetType = Packet.Type.Ant;
+                    string antInfo = element.Substring(3);
+                    if (antInfo.StartsWith("P"))
+                    {
+                        packable = true;
+                        antInfo = antInfo.Substring(1);
+                    } else if (antInfo.StartsWith("U"))
+                    {
+                        unpackable = true;
+                        antInfo = antInfo.Substring(1);
+                    }
+                    if (antInfo.Length >= 2)
+                        switch (antInfo[1]) 
+                        {
+                            case 'r': antOri = Orientation.RIGHT;break;
+                            case 'l': antOri = Orientation.LEFT; break;
+                            case 'u': antOri = Orientation.UP;   break;
+                            case 'd': antOri = Orientation.DOWN; break;
+                        }
+                    // not safe here
+                    packet = new Packet(packetType, container);
+                    packet.AntInit(packable, unpackable, antOri);
+                } else
+                {
+                    switch (element)
+                    {
+                        case "tar":
+                            packetType = Packet.Type.Target;
+                            break;
+                        case "pack":
+                            packetType = Packet.Type.Box;
+                            break;
+                        case "wall":
+                            packetType = Packet.Type.Wall;
+                            break;
+                        case "hole":
+                            packetType = Packet.Type.Hole;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (packetType != Packet.Type.Unk)
+                        packet = new Packet(packetType, container);
                 }
 
-                if (packet != null)
+                if (packetType != Packet.Type.Unk)
                 {
                     GameObject pack = Instantiate(packetPrefab);
                     pack.transform.parent = transform;
@@ -151,7 +191,7 @@ public class GridManager : MonoBehaviour
             container = containers[key];
             return Instruction.Result.SUCCEED;
         }
-        return Instruction.Result.ERROR;
+        return Instruction.Result.INVALID_GRID;
     }
 
     // Update is called once per frame

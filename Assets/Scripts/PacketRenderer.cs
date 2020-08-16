@@ -27,7 +27,7 @@ public class PacketRenderer : MonoBehaviour
     {
         manager = mManager;
         packet = mPacket;
-        GetComponent<SpriteRenderer>().sortingOrder = 1; // hard-coded
+        UpdateType();
         initialized = true;
     }
 
@@ -41,22 +41,18 @@ public class PacketRenderer : MonoBehaviour
     public void UpdateType()
     {
         currentType = packet.type;
+        GetComponent<SpriteRenderer>().sortingOrder = GridManager.OrderOfPacket(currentType);
         string filepath = "Sprites/{0}";
         switch (currentType)
         {
-            case Packet.Type.Box:
-                filepath = string.Format(filepath, "box");
-                break;
-            case Packet.Type.Ant:
-                filepath = string.Format(filepath, "character");
-                break;
-            case Packet.Type.Hole:
-                filepath = string.Format(filepath, "hole");
-                break;
-            default:
-                filepath = string.Format(filepath, "box");
-                break;
+            case Packet.Type.Ant:  filepath = "character";  break;
+            case Packet.Type.Box:  filepath = "box";        break;
+            case Packet.Type.Wall: filepath = "wall";       break;
+            case Packet.Type.Hole: filepath = "hole";       break;
+            default: filepath = "box";  break;
         }
+
+        filepath = string.Format("Sprites/{0}", filepath);
         GetComponent<SpriteRenderer>().sprite = ResourceLoader.LoadImage(filepath);
     }
 
