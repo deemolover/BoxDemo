@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 
 public class GridManager : MonoBehaviour
 {
-    static string currentLevel = "level_demo";
+    // static string currentLevel = "level_demo";
 
     public GameObject gridPrefab;
     public GameObject packetPrefab;
@@ -43,12 +43,13 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         GameObject.Find("EditorUI/Reload").GetComponent<Button>().onClick.AddListener(OnClickReload);
+        GameObject.Find("CharaUI/GoBack").GetComponent<Button>().onClick.AddListener(OnClickBack);
         selectionReminder = GameObject.Find("CharaUI/Selected");
         selectionReminder.SetActive(false);
         successReminder = GameObject.Find("CharaUI/Success");
         successReminder.SetActive(false);
         gameSet = false;
-        LoadLevel(currentLevel);
+        LoadLevel(LevelManager.selectedLevel);
     }
 
     // Update is called once per frame
@@ -93,10 +94,13 @@ public class GridManager : MonoBehaviour
     }
 
     // functions bound to UI
-
+    public void OnClickBack()
+    {
+        SceneManager.LoadScene("SelectLevel");
+    }
     public void OnClickReload()
     {
-        LoadLevel("level_demo");
+        LoadLevel(LevelManager.selectedLevel);
     }
 
     void LoadDemo()
