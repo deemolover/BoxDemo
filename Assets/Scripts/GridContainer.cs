@@ -203,6 +203,31 @@ public class GridContainer : MonoBehaviour
         }
     }
 
+    public void TargetCheck()
+    {
+        bool hasTarget = false;
+        bool delivered = false;
+        foreach (var packet in packets)
+        {
+            if (packet.type == Packet.Type.Target)
+            {
+                hasTarget = true;
+            }
+            else if (packet.type == Packet.Type.Box)
+            {
+                if (packet.packets.Count == 0) // need to improve logic
+                {
+                    delivered = true;
+                }
+            }
+        }
+        
+        if (hasTarget && delivered)
+        {
+            Manager.GameSet();
+        }
+    }
+
 
     // Update is called once per frame
     void Update()

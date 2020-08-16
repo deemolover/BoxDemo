@@ -211,6 +211,7 @@ public class Packet
                     Release(packet);
                     recv.Contain(packet);
                 }
+                recv.TargetCheck();
                 result = Instruction.Result.SUCCEED;
             }
         } else
@@ -265,6 +266,7 @@ public class Packet
                     from.Release(this);
                     target.Contain(this);
                     target.HoleCheck();
+                    from.TargetCheck();
                 }
             }
         }

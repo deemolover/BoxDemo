@@ -58,6 +58,7 @@ public class GridManager : MonoBehaviour
         else
         {
             selectionReminder.SetActive(false);
+            return;
         }
 
         Orientation ori = Orientation.NONE;
@@ -247,6 +248,11 @@ public class GridManager : MonoBehaviour
     public void UpdateSelectedPacket(PacketRenderer renderer)
     {
         selectedPacketRenderer = renderer;        
+    }
+
+    public void GameSet()
+    {
+        Debug.Log("You Win");
     }
 
     
