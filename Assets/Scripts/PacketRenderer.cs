@@ -91,6 +91,7 @@ public class PacketRenderer : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Debug.Log("clicked, type:" + packet.type.ToString());
         if (packet.Selectable)
             manager.UpdateSelectedPacket(this);
     }
@@ -98,12 +99,14 @@ public class PacketRenderer : MonoBehaviour
     public void Hide()
     {
         GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<BoxCollider2D>().enabled = false;
         arrowReminder.enabled = false;
     }
 
     public void Show()
     {
         GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<BoxCollider2D>().enabled = true;
         if (packet.type == Packet.Type.Ant)
             arrowReminder.enabled = true;
     }
@@ -122,7 +125,7 @@ public class PacketRenderer : MonoBehaviour
             Show();
         }
         Vector3 vec = GridManager.LocationToPos(packet.Location);
-        vec.z = - GridManager.OrderOfPacket(packet.type) / 100;
+        vec.z = - GridManager.OrderOfPacket(packet.type) / 100f;
         transform.position = vec;
 
         if (currentType != packet.type)
