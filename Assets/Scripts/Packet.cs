@@ -16,7 +16,10 @@ public class ResourceLoader
         if (!sprites.ContainsKey(filepath))
         {
             var pref = Resources.Load(filepath, typeof(Sprite));
-            if (pref == null) return null;
+            if (pref == null)
+            {
+                return null;
+            }
             Sprite tmp = GameObject.Instantiate(pref) as Sprite;
             sprites.Add(filepath, tmp);
         }

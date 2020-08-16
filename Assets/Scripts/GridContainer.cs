@@ -37,6 +37,7 @@ public class GridContainer : MonoBehaviour
     {
         manager = mManager;
         location = mLocation;
+        transform.position = GridManager.LocationToPos(Location);
         initialized = true;
     }
 

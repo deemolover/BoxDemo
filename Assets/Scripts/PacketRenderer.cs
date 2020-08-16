@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PacketRenderer : MonoBehaviour
 {
@@ -19,15 +20,14 @@ public class PacketRenderer : MonoBehaviour
 
     public void Init(GridManager mManager, GridContainer container)
     {
-        manager = mManager;
-        packet = new Packet(type, container);
-        initialized = true;
+        Init(mManager, new Packet(type, container));
     }
 
     public void Init(GridManager mManager, Packet mPacket)
     {
         manager = mManager;
         packet = mPacket;
+        GetComponent<SpriteRenderer>().sortingOrder = 1; // hard-coded
         initialized = true;
     }
 
@@ -41,7 +41,7 @@ public class PacketRenderer : MonoBehaviour
     public void UpdateType()
     {
         currentType = packet.type;
-        string filepath = "Sprites\\{0}.png";
+        string filepath = "Sprites/{0}";
         switch (currentType)
         {
             case Packet.Type.Box:

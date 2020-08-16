@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 
 public class GridManager : MonoBehaviour
@@ -28,11 +28,26 @@ public class GridManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // LoadDemo();
+        LoadLevel("level_demo");
+        GameObject.Find("EditorUI/Reload").GetComponent<Button>().onClick.AddListener(OnClickReload);        
+    }
+
+    // UI FUNCTIONS
+
+    public void OnClickReload()
+    {
+        LoadLevel("level_demo");
+    }
+
+    void LoadDemo()
+    {
         foreach (GridContainer container in gameObject.GetComponentsInChildren<GridContainer>())
         {
             container.Init(this, container.InitLocation);
             containers.Add(HashLocation(container.Location), container);
-            container.transform.position = LocationToPos(container.Location);
+            // moved to container.Init()
+            // container.transform.position = LocationToPos(container.Location);
         }
 
         foreach (PacketRenderer renderer in gameObject.GetComponentsInChildren<PacketRenderer>())
@@ -50,9 +65,9 @@ public class GridManager : MonoBehaviour
 
     void ClearScene()
     {
-        foreach (var child in GetComponentsInChildren<Transform>())
+        foreach (Transform child in transform)
         {
-            Destroy(child);
+            Destroy(child.gameObject);
         }
 
         selectedPacketRenderer = null;
@@ -64,7 +79,7 @@ public class GridManager : MonoBehaviour
     {
         ClearScene();
 
-        string filepath = Application.streamingAssetsPath + "/" + levelName + ".csv";
+        string filepath = Application.streamingAssetsPath + "/Levels/" + levelName + ".csv";
         var data = CSVTool.Read(filepath, Encoding.UTF8);
 
         int width = 0;
@@ -74,7 +89,6 @@ public class GridManager : MonoBehaviour
         }
         int height = data.Count;
 
-        List<GridContainer> containerData;
         for (int i = 0; i < data.Count; ++i)
         {
             for (int j = 0; j < data[i].Count; ++j)
@@ -97,12 +111,17 @@ public class GridManager : MonoBehaviour
                     case "pack":
                         packet = new Packet(Packet.Type.Box, container);
                         break;
+                    case "wall":
+                        packet = new Packet(Packet.Type.Box, container);
+                        break;
                     case "ant-u":
+                        packet = new Packet(Packet.Type.Ant, container);
+                        break;
+                    case "ant-r":
                         packet = new Packet(Packet.Type.Ant, container);
                         break;
                     default:
                         break;
-                        
                 }
 
                 if (packet != null)
@@ -111,6 +130,10 @@ public class GridManager : MonoBehaviour
                     pack.transform.parent = transform;
                     var renderer = pack.AddComponent<PacketRenderer>();
                     renderer.Init(this, packet);
+                    if (packet.type == Packet.Type.Ant)
+                    {
+                        selectedPacketRenderer = renderer;
+                    }
                 }
             }
         }
