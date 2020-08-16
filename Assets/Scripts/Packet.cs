@@ -81,6 +81,14 @@ public class Packet
     // TODO: describe with enum
     bool packable = false, unpackable = false;
     Orientation antOri = Orientation.NONE;
+    public bool Selectable
+    {
+        get { return type == Type.Ant; }
+    }
+    public bool Movable
+    {
+        get { return type == Type.Ant; }
+    }
     public bool Holding
     {
         get { return type == Type.Ant && packets.Count != 0; }
@@ -178,6 +186,7 @@ public class Packet
                     return Instruction.Result.INCOMPATIBLE;
                 from.Release(this);
                 target.Contain(this);
+                target.HoleCheck();
             }
         }
         return result;
@@ -230,6 +239,7 @@ public class Packet
                 {
                     from.Release(this);
                     target.Contain(this);
+                    target.HoleCheck();
                 }
             }
         }
@@ -254,6 +264,7 @@ public class Packet
                 {
                     from.Release(this);
                     target.Contain(this);
+                    target.HoleCheck();
                 }
             }
         }
@@ -266,7 +277,7 @@ public class Packet
         switch (instr.type)
         {
             case Instruction.Type.MOVE:
-                result = Move(instr.oriVal);
+                if (Movable) result = Move(instr.oriVal);
                 break;
             case Instruction.Type.SKILL:
                 if (Holder) result = HoldOrEase();

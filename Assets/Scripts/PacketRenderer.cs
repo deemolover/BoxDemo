@@ -70,8 +70,8 @@ public class PacketRenderer : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log(manager);
-        manager.UpdateSelectedPacket(this);
+        if (packet.Selectable)
+            manager.UpdateSelectedPacket(this);
     }
 
 

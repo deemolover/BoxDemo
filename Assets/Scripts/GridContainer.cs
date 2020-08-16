@@ -175,6 +175,34 @@ public class GridContainer : MonoBehaviour
         return Instruction.Result.SUCCEED;
     }
 
+    public void HoleCheck()
+    {
+        Packet hole = null;
+        List<Packet> toKill = new List<Packet>();
+        bool filled = false;
+        foreach (var packet in packets)
+        {
+            if (packet.type == Packet.Type.Hole)
+            {
+                hole = packet;
+            }
+            else if (packet.type == Packet.Type.Ant)
+            {
+                toKill.Add(packet);
+                if (packet.Holding) filled = true;
+            }
+        }
+        
+        if (hole != null)
+        {
+            foreach (var packet in toKill)
+            {
+                Release(packet);
+            }
+            if (filled) Release(hole);
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
