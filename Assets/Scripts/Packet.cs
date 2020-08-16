@@ -50,6 +50,7 @@ public class Instruction
     public enum Type
     {
         MOVE = 1,
+        SKILL = 2
     }
 
     public Type type;
@@ -77,8 +78,17 @@ public class Packet
     public List<Packet> packets = new List<Packet>(); // child packets
 
     // ant related info, valid when this is an ant
+    // TODO: describe with enum
     bool packable = false, unpackable = false;
     Orientation antOri = Orientation.NONE;
+    public bool Packer
+    {
+        get { return packable; }
+    }
+    public bool Unpacker
+    {
+        get { return unpackable; }
+    }
 
 
     public Packet(Type mType, object mContainer)

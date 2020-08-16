@@ -45,7 +45,14 @@ public class PacketRenderer : MonoBehaviour
         string filepath = "Sprites/{0}";
         switch (currentType)
         {
-            case Packet.Type.Ant:  filepath = "character";  break;
+            case Packet.Type.Ant:
+                filepath = "character";
+                if (packet.Packer) filepath = "packer";
+                if (packet.Unpacker) filepath = "unpacker";
+                break;
+            case Packet.Type.Target:
+                filepath = "target";
+                break;
             case Packet.Type.Box:  filepath = "box";        break;
             case Packet.Type.Wall: filepath = "wall";       break;
             case Packet.Type.Hole: filepath = "hole";       break;
