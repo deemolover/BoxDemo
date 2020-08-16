@@ -7,11 +7,15 @@ using UnityEngine.UI;
 
 public class GridManager : MonoBehaviour
 {
+    static string currentLevel = "level_demo";
+
     public GameObject gridPrefab;
     public GameObject packetPrefab;
 
     GameObject selectionReminder;
     PacketRenderer selectedPacketRenderer;
+    GameObject successReminder;
+    bool gameSet = false;
     // GridContainer selectedContainer;
 
     Dictionary<int, GridContainer> containers = new Dictionary<int, GridContainer>();
@@ -38,16 +42,19 @@ public class GridManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // LoadDemo();
-        LoadLevel("level_demo");
         GameObject.Find("EditorUI/Reload").GetComponent<Button>().onClick.AddListener(OnClickReload);
         selectionReminder = GameObject.Find("CharaUI/Selected");
         selectionReminder.SetActive(false);
+        successReminder = GameObject.Find("CharaUI/Success");
+        successReminder.SetActive(false);
+        gameSet = false;
+        LoadLevel(currentLevel);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (gameSet) return;
         if (selectedPacketRenderer != null)
         {
             selectionReminder.SetActive(true);
@@ -124,6 +131,8 @@ public class GridManager : MonoBehaviour
 
         selectedPacketRenderer = null;
         containers = new Dictionary<int, GridContainer>();
+        gameSet = false;
+        successReminder.SetActive(false);
 
     }
 
@@ -253,6 +262,8 @@ public class GridManager : MonoBehaviour
     public void GameSet()
     {
         Debug.Log("You Win");
+        gameSet = true;
+        successReminder.SetActive(true);
     }
 
     
