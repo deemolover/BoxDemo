@@ -76,6 +76,12 @@ public class GridManager : MonoBehaviour
             instr.oriVal = ori;
             selectedPacketRenderer.ReceiveInstruction(instr);
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Instruction instr = new Instruction(Instruction.Type.SKILL);
+            selectedPacketRenderer.ReceiveInstruction(instr);
+        }
     }
 
     // functions bound to UI
@@ -216,7 +222,15 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
+    }
 
+    public PacketRenderer CreatePacketRenderer(Packet packet, GridContainer container)
+    {
+        GameObject pack = Instantiate(packetPrefab);
+        pack.transform.parent = transform;
+        var renderer = pack.GetComponent<PacketRenderer>();
+        renderer.Init(this, packet);
+        return renderer;
     }
 
     public Instruction.Result QueryContainer(Vector2 location, ref GridContainer container)

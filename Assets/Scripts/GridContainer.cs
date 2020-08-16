@@ -109,6 +109,73 @@ public class GridContainer : MonoBehaviour
         return result;
     }
 
+    public Instruction.Result TryHold(Packet holder)
+    {
+        Packet box = null;
+        foreach (var packet in packets)
+        {
+            if (packet.type == Packet.Type.Box)
+            {
+                box = packet;
+            }
+        }
+        if (box == null)
+        {
+            return Instruction.Result.ERROR;
+        }
+        Release(box);
+        holder.Contain(box);
+        return Instruction.Result.SUCCEED;
+    }
+
+    public Instruction.Result TryPack(Packet packer)
+    {
+        List<Packet> toPack = new List<Packet>();
+        foreach (var packet in packets)
+        {
+            if (packet.type != Packet.Type.Ant && packet.type != Packet.Type.Box)
+            {
+                return Instruction.Result.ERROR;
+            }
+            toPack.Add(packet);
+        }
+        Packet box = new Packet(Packet.Type.Box, this);
+        PacketRenderer renderer = Manager.CreatePacketRenderer(box, this);
+        foreach (var packet in toPack)
+        {
+            Release(packet);
+            box.Contain(packet);
+        }
+        return Instruction.Result.SUCCEED;
+    }
+
+    public Instruction.Result TryUnpack(Packet unpacker)
+    {
+        Packet box = null;
+        foreach (var packet in packets)
+        {
+            if (packet.type == Packet.Type.Box)
+            {
+                box = packet;
+            }
+        }
+        if (box == null || box.packets.Count == 0)
+        {
+            return Instruction.Result.ERROR;
+        }
+        List<Packet> toUnpack = new List<Packet>();
+        foreach (Packet packet in box.packets)
+            toUnpack.Add(packet);
+        foreach (Packet packet in toUnpack)
+        {
+            box.Release(packet);
+            Contain(packet);
+        }
+        Release(box);
+        return Instruction.Result.SUCCEED;
+    }
+
+
     // Update is called once per frame
     void Update()
     {

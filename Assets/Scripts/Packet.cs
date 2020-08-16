@@ -81,13 +81,21 @@ public class Packet
     // TODO: describe with enum
     bool packable = false, unpackable = false;
     Orientation antOri = Orientation.NONE;
+    public bool Holding
+    {
+        get { return type == Type.Ant && packets.Count != 0; }
+    }
+    public bool Holder
+    {
+        get { return type == Type.Ant && !packable && !unpackable; }
+    }
     public bool Packer
     {
-        get { return packable; }
+        get { return type == Type.Ant && packable; }
     }
     public bool Unpacker
     {
-        get { return unpackable; }
+        get { return type == Type.Ant && unpackable; }
     }
 
 
@@ -101,6 +109,7 @@ public class Packet
         }
     }
 
+    /*
     ~Packet()
     {
         if (container != null && container is GridContainer)
@@ -108,6 +117,7 @@ public class Packet
             ((GridContainer)container).Release(this);
         }
     }
+    */
 
     public void AntInit(bool mPackable, bool mUnpackable, Orientation orientation)
     {
@@ -134,6 +144,24 @@ public class Packet
         }
     }
 
+    public void Release(Packet packet)
+    {
+        if (packets.Contains(packet))
+        {
+            packets.Remove(packet);
+        }
+        if (packet.container != null && packet.container.Equals(this))
+            packet.container = null;
+    }
+
+    public void Contain(Packet packet)
+    {
+        if (packet.container == null || !packet.container.Equals(this))
+            packet.container = this;
+        if (!packets.Contains(packet))
+            packets.Add(packet);
+    }
+
     public Instruction.Result Move(Orientation oriVal)
     {
         if (type == Type.Ant && antOri != oriVal)
@@ -155,6 +183,83 @@ public class Packet
         return result;
     }
 
+    public Instruction.Result HoldOrEase()
+    {
+        // if (!Holder) return Instruction.Result.ERROR;
+        Instruction.Result result = Instruction.Result.ERROR;
+        if (Holding)
+        {
+            if (container is GridContainer)
+            {
+                List<Packet> toEase = new List<Packet>();
+                var recv = ((GridContainer)container);
+                foreach (var packet in packets)
+                {
+                    toEase.Add(packet);
+                }
+                foreach (var packet in toEase)
+                {
+                    Release(packet);
+                    recv.Contain(packet);
+                }
+                result = Instruction.Result.SUCCEED;
+            }
+        } else
+        {
+            if (container is GridContainer)
+            {
+                result = ((GridContainer)container).TryHold(this);
+            }
+        }
+        return result;
+    }
+
+    public Instruction.Result Pack()
+    {
+        // if (!Packer) return Instruction.Result.ERROR;
+        Instruction.Result result = Instruction.Result.ERROR;
+        if (container is GridContainer)
+        {
+            GridContainer target = null;
+            GridContainer from = (GridContainer)container;
+            result = from.QueryAdjacentContainer(antOri, ref target);
+            if (result == Instruction.Result.SUCCEED)
+            {
+                result = target.TryPack(this);
+                if (result == Instruction.Result.SUCCEED)
+                {
+                    from.Release(this);
+                    target.Contain(this);
+                }
+            }
+        }
+        return result;
+    }
+
+    public Instruction.Result Unpack()
+    {
+        // if (!Unpacker) return Instruction.Result.ERROR;
+        Instruction.Result result = Instruction.Result.ERROR;
+        if (container is GridContainer)
+        {
+            GridContainer target = null;
+            GridContainer from = (GridContainer)container;
+            result = from.QueryAdjacentContainer(antOri, ref target);
+            if (result == Instruction.Result.SUCCEED)
+            {
+                if (!target.Compatible(this))
+                    return Instruction.Result.INCOMPATIBLE;
+                result = from.TryUnpack(this);
+                if (result == Instruction.Result.SUCCEED)
+                {
+                    from.Release(this);
+                    target.Contain(this);
+                }
+            }
+        }
+        return result;
+    }
+
     public Instruction.Result ReceiveInstruction(Instruction instr)
     {
         Instruction.Result result = Instruction.Result.ERROR;
@@ -162,6 +267,11 @@ public class Packet
         {
             case Instruction.Type.MOVE:
                 result = Move(instr.oriVal);
+                break;
+            case Instruction.Type.SKILL:
+                if (Holder) result = HoldOrEase();
+                else if (Packer) result = Pack();
+                else if (Unpacker) result = Unpack();
                 break;
             default:
                 break;

@@ -31,6 +31,11 @@ public class PacketRenderer : MonoBehaviour
         initialized = true;
     }
 
+    public void Kill()
+    {
+        Destroy(gameObject);
+    }
+
     public Instruction.Result ReceiveInstruction(Instruction instr)
     {
         return packet.ReceiveInstruction(instr);
@@ -74,6 +79,15 @@ public class PacketRenderer : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
+        if (packet == null || packet.container == null)
+            Destroy(gameObject);
+        if (packet.container is Packet)
+        {
+            GetComponent<SpriteRenderer>().enabled = false;
+        } else
+        {
+            GetComponent<SpriteRenderer>().enabled = true;
+        }
         transform.position = GridManager.LocationToPos(packet.Location);
 
         if (currentType != packet.type)
