@@ -56,6 +56,12 @@ public class PacketRenderer : MonoBehaviour
         GetComponent<SpriteRenderer>().sprite = ResourceLoader.LoadImage(filepath);
     }
 
+    private void OnMouseDown()
+    {
+        Debug.Log(manager);
+        manager.UpdateSelectedPacket(this);
+    }
+
 
     // Update is called once per frame
     void Update()

@@ -10,6 +10,7 @@ public class GridManager : MonoBehaviour
     public GameObject gridPrefab;
     public GameObject packetPrefab;
 
+    GameObject selectionReminder;
     PacketRenderer selectedPacketRenderer;
     // GridContainer selectedContainer;
 
@@ -39,10 +40,45 @@ public class GridManager : MonoBehaviour
     {
         // LoadDemo();
         LoadLevel("level_demo");
-        GameObject.Find("EditorUI/Reload").GetComponent<Button>().onClick.AddListener(OnClickReload);        
+        GameObject.Find("EditorUI/Reload").GetComponent<Button>().onClick.AddListener(OnClickReload);
+        selectionReminder = GameObject.Find("CharaUI/Selected");
+        selectionReminder.SetActive(false);
     }
 
-    // UI FUNCTIONS
+    // Update is called once per frame
+    void Update()
+    {
+        if (selectedPacketRenderer != null)
+        {
+            selectionReminder.SetActive(true);
+            Vector3 pos = Camera.main.WorldToScreenPoint(selectedPacketRenderer.transform.position);
+            pos = new Vector3(pos.x, pos.y+50, 0);
+            selectionReminder.transform.position = pos;
+        }
+        else
+        {
+            selectionReminder.SetActive(false);
+        }
+
+        Orientation ori = Orientation.NONE;
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            ori = Orientation.UP;
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            ori = Orientation.LEFT;
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            ori = Orientation.DOWN;
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            ori = Orientation.RIGHT;
+
+        if (ori != Orientation.NONE)
+        {
+            Instruction instr = new Instruction(Instruction.Type.MOVE);
+            instr.oriVal = ori;
+            selectedPacketRenderer.ReceiveInstruction(instr);
+        }
+    }
+
+    // functions bound to UI
 
     public void OnClickReload()
     {
@@ -109,7 +145,7 @@ public class GridManager : MonoBehaviour
                 }
                 GameObject obj = Instantiate(gridPrefab);
                 obj.transform.parent = transform;
-                GridContainer container = obj.AddComponent<GridContainer>();
+                GridContainer container = obj.GetComponent<GridContainer>();
                 Vector2 location = new Vector2(j - width / 2, height / 2 - i);
                 container.Init(this, location);
                 containers.Add(HashLocation(container.Location), container);
@@ -171,7 +207,7 @@ public class GridManager : MonoBehaviour
                 {
                     GameObject pack = Instantiate(packetPrefab);
                     pack.transform.parent = transform;
-                    var renderer = pack.AddComponent<PacketRenderer>();
+                    var renderer = pack.GetComponent<PacketRenderer>();
                     renderer.Init(this, packet);
                     if (packet.type == Packet.Type.Ant)
                     {
@@ -194,24 +230,10 @@ public class GridManager : MonoBehaviour
         return Instruction.Result.INVALID_GRID;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateSelectedPacket(PacketRenderer renderer)
     {
-        Orientation ori = Orientation.NONE;
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            ori = Orientation.UP;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-            ori = Orientation.LEFT;
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-            ori = Orientation.DOWN;
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-            ori = Orientation.RIGHT;
-
-        if (ori != Orientation.NONE)
-        {
-            Instruction instr = new Instruction(Instruction.Type.MOVE);
-            instr.oriVal = ori;
-            selectedPacketRenderer.ReceiveInstruction(instr);
-        }
+        selectedPacketRenderer = renderer;        
     }
+
+    
 }
