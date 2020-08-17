@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class BackToMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class HoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     Image image;
     float scaling = 1.1f;
@@ -16,34 +15,26 @@ public class BackToMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<Button>().onClick.AddListener(OnClick);
         image = GetComponent<Image>();
         selected = new Color(shade, shade, shade);
         originalScale = transform.localScale;
     }
 
-    void OnClick()
-    {
-        SceneManager.LoadScene("StartGame");
-    }
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         transform.localScale = originalScale * scaling;
-        // image.sprite = ResourceLoader.LoadImage("Sprites/UI/exitHover");
         image.color = selected;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         transform.localScale = originalScale;
-        // image.sprite = ResourceLoader.LoadImage("Sprites/UI/exit");
         image.color = Color.white;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 }

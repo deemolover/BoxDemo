@@ -22,7 +22,7 @@ public class LevelManager : MonoBehaviour
         }
     }
     List<LevelInfo> levels = new List<LevelInfo>();
-    public static string selectedLevel;
+    public static string selectedLevel = "";
 
     public int RegisterLevel(LevelBlock level)
     {

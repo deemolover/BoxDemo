@@ -143,6 +143,7 @@ public class GridManager : MonoBehaviour
     void LoadLevel(string levelName)
     {
         ClearScene();
+        if (levelName == "") levelName = "level_demo";
 
         string filepath = Application.streamingAssetsPath + "/Levels/" + levelName + ".csv";
         var data = CSVTool.Read(filepath, Encoding.UTF8);
