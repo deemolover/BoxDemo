@@ -28,7 +28,7 @@ public class LevelManager : MonoBehaviour
     {
         GameObject obj = level.gameObject;
         string objectName = obj.name;
-        string levelName = GameObject.Find(objectName + "/LevelName").GetComponent<Text>().text;
+        string levelName = GameObject.Find(objectName + "Canvas/LevelName").GetComponent<Text>().text;
         string sceneName = level.sceneName;
         levels.Add(new LevelInfo(objectName, levelName, sceneName));
         return levels.Count - 1;

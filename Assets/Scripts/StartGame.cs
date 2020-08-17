@@ -9,7 +9,12 @@ public class StartGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<Button>().onClick.AddListener(OnClick);
+
+    }
+
+    private void OnMouseUpAsButton()
+    {
+        OnClick();
     }
 
     void OnClick()
