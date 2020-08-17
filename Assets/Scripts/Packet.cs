@@ -89,6 +89,8 @@ public class Packet
             else return Orientation.NONE;
         }
     }
+    public bool dirty = false; // if sprite update is needed
+
     public bool Selectable
     {
         get { return type == Type.Ant; }
@@ -229,6 +231,8 @@ public class Packet
                 result = ((GridContainer)container).TryHold(this);
             }
         }
+        if (result == Instruction.Result.SUCCEED)
+            dirty = true;
         return result;
     }
 

@@ -55,6 +55,7 @@ public class PacketRenderer : MonoBehaviour
     Packet.Type currentType = Packet.Type.Unk;
     public void UpdateType()
     {
+        packet.dirty = false;
         currentType = packet.type;
         GetComponent<SpriteRenderer>().sortingOrder = GridManager.OrderOfPacket(currentType);
         arrowReminder.sortingOrder = GridManager.OrderOfPacket(currentType) - 1;
@@ -62,9 +63,15 @@ public class PacketRenderer : MonoBehaviour
         switch (currentType)
         {
             case Packet.Type.Ant:
-                filepath = "character";
-                if (packet.Packer) filepath = "packer";
-                if (packet.Unpacker) filepath = "unpacker";
+                if (packet.Holder)
+                {
+                    if (packet.Holding)
+                        filepath = "holding";
+                    else
+                        filepath = "character";
+                }
+                else if (packet.Packer) filepath = "packer";
+                else if (packet.Unpacker) filepath = "unpacker";
                 int x = 0, y = 0;
                 switch (packet.AntOrientation)
                 {
@@ -128,7 +135,7 @@ public class PacketRenderer : MonoBehaviour
         vec.z = - GridManager.OrderOfPacket(packet.type) / 100f;
         transform.position = vec;
 
-        if (currentType != packet.type)
+        if (currentType != packet.type || packet.dirty)
         {
             UpdateType();
         }        
