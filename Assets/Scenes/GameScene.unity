@@ -238,6 +238,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c46458afcdebd349bc9084d40728e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  changeSprite: 0
+  originalSprite: {fileID: 0}
+  hoveringSprite: {fileID: 0}
 --- !u!1 &296301137
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,10 +881,10 @@ RectTransform:
   m_Father: {fileID: 1904912647}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 427, y: -183}
-  m_SizeDelta: {x: 115.2, y: 115.2}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -82, y: 195}
+  m_SizeDelta: {x: 115.20001, y: 115.20001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1492183929
 MonoBehaviour:
@@ -970,6 +973,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c46458afcdebd349bc9084d40728e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  changeSprite: 0
+  originalSprite: {fileID: 0}
+  hoveringSprite: {fileID: 0}
 --- !u!1 &1904912643
 GameObject:
   m_ObjectHideFlags: 0

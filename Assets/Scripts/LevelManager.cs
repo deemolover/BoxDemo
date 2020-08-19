@@ -4,6 +4,36 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public class SavedData
+{
+    private static readonly SavedData instance = new SavedData();
+
+    private SavedData()
+    {
+        // TODO: load saved data from files
+    }
+
+    public static SavedData GetInstance()
+    {
+        return instance;
+    }
+
+    public string QuerySavedData(string saveID, string path)
+    {
+        return "";
+    }
+
+    public void UpdateSavedData(string saveID, string path, string data)
+    {
+
+    }
+
+    public void WriteBack()
+    {
+        // write data back to file
+    }
+}
+
 public class LevelManager : MonoBehaviour
 {
     public class LevelInfo

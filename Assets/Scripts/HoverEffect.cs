@@ -12,6 +12,10 @@ public class HoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     float shade = 200f / 255f;
     Color selected;
 
+    public bool changeSprite = false;
+    public Sprite originalSprite;
+    public Sprite hoveringSprite;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,12 +26,16 @@ public class HoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (changeSprite && hoveringSprite != null)
+            image.sprite = hoveringSprite;
         transform.localScale = originalScale * scaling;
         image.color = selected;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (changeSprite && originalSprite != null)
+            image.sprite = originalSprite;
         transform.localScale = originalScale;
         image.color = Color.white;
     }
